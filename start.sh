@@ -71,10 +71,8 @@ while IFS= read -r conjunto; do
         continue
     fi
 
-    # /bin/python3 "$app_path/intercambiar_imagen.py" "$archivo" "$imagen"
-
     # Eliminar archivos exceso
-    for extension in "aux" "log" "pdf" "tex" # "svg"
+    for extension in "aux" "log" "pdf" "tex" 
     do 
         rm "$imagen.$extension" > /dev/null 2>&1
     done
@@ -84,8 +82,18 @@ done < "$content_path/img/imagenes_procesar.txt"
 rm "$content_path/img/imagenes_procesar.txt"
 cd "$app_path"
 
+# Reemplazar dataviewjs por su correspondiente codigo javascript
+mkdir "$content_path/scripts"
+
+# Mover dataview.js a public para ser usada
+mv "$app_path/dataview.js" "$content_path/scripts/dataview.js"
+
+# Reemplazar en los archivo
+/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path"
+
 # Buildear la pagina
 npx quartz build
+
 
 # Mover lo creado a la carpeta de content ya que estara ahi el volumen
 mv public content
