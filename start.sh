@@ -88,12 +88,18 @@ mkdir "$content_path/scripts"
 # Mover dataview.js a public para ser usada
 mv "$app_path/dataview.js" "$content_path/scripts/dataview.js"
 
+# Generar metadata de archivos
+echo "Generando metadata de archivos"
+/bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$content_path/scripts/allFiles.json"
+
 # Reemplazar en los archivo
 /bin/python3 "$app_path/reemplazar_dataview.py" "$content_path"
 
+# Ejecutar generarHtml.js
+/bin/node "$app_path/dataview/generarHtml.js" "https://example.com"
+
 # Buildear la pagina
 npx quartz build
-
 
 # Mover lo creado a la carpeta de content ya que estara ahi el volumen
 mv public content

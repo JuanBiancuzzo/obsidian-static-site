@@ -1,8 +1,10 @@
 class Dataview {
-    constructor(target_id) {
+    constructor(target_id, current_file) {
         this.target_id = target_id;
         this.root = document.getElementById(target_id);
-        console.log("Holaaa");
+        this.current_file = current_file;
+
+        console.log(allFiles);
     }
 
     log(texto) {

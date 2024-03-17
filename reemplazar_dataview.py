@@ -46,6 +46,7 @@ def obtenerDirectorioRelativo(nombreArchivo):
 
 def procesarArchivo(index, nombreArchivo, directorio):
     nombreTemp = f"{directorio}/temp.txt"
+    nombreArchivoRelativo = nombreArchivo.replace(directorio, '')
 
     patronEncontrado = False
 
@@ -91,7 +92,7 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 scriptActual.append(linea)
 
     if len(scripts) > 0:
-        directorioRelativo = obtenerDirectorioRelativo(nombreArchivo.replace(directorio, ''))
+        directorioRelativo = obtenerDirectorioRelativo(nombreArchivoRelativo)
         scriptName = f"scripts/dataviewScriptFile{index}.js"
 
         temp.write(f"\n\n<script src='{directorioRelativo}/{scriptName}'></script>\n\n")
@@ -109,7 +110,7 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 scriptFile.write(linea)
 
             scriptFile.write("}\n")
-            scriptFile.write(f"dataviewFunc{id}(new Dataview('{PREFIX_DATAVIEW}-{id}'));\n")
+            scriptFile.write(f"\ndataviewFunc{id}(new Dataview('{PREFIX_DATAVIEW}-{id}', '{nombreArchivoRelativo}'));\n")
             scriptFile.write("\n\n")
 
         scriptFile.close()
@@ -118,7 +119,7 @@ def procesarArchivo(index, nombreArchivo, directorio):
     temp.close()
 
     if len(scripts) > 0:
-        print(f"Procesando dataview: {nombreArchivo.replace(directorio, '')}")
+        print(f"Procesando dataview: {nombreArchivoRelativo}")
         os.replace(nombreTemp, nombreArchivo)
 
 
