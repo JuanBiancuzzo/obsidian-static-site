@@ -51,52 +51,20 @@ fi
 
 # Reemplazar latex y tikz por svg 
 mkdir "$content_path/img"
-/bin/python3 "$app_path/reemplazar_latex.py" "$content_path" > "$content_path/img/imagenes_procesar.txt"
-
 cd "$content_path/img"
 
-while IFS= read -r conjunto; do
+/bin/python3 "$app_path/reemplazar_latex.py" "$content_path" \
+    | xargs -I {} bash -c "/bin/bash latex2svg.sh {}" # fijarme si se puede simplificar bash latex2svg.sh
 
-    archivo=$(echo "$conjunto" | cut -d':' -f1)
-    imagen=$(echo "$conjunto" | cut -d':' -f2)
-
-    echo "Procesando imagen: $imagen"
-
-    # Crear pdf
-    pdflatex "$imagen.tex" > /dev/null
-
-    # Transformar pdf en svg
-    if ! pdf2svg "$imagen.pdf" "$imagen.svg"; then
-        echo "Hubo un error en la imagen: $imagen"
-        continue
-    fi
-
-    # Eliminar archivos exceso
-    for extension in "aux" "log" "pdf" "tex" 
-    do 
-        rm "$imagen.$extension" > /dev/null 2>&1
-    done
-
-done < "$content_path/img/imagenes_procesar.txt"
-
-rm "$content_path/img/imagenes_procesar.txt"
 cd "$app_path"
-
-# Reemplazar dataviewjs por su correspondiente codigo javascript
-mkdir "$content_path/scripts"
-
-# Mover dataview.js a public para ser usada
-mv "$app_path/dataview.js" "$content_path/scripts/dataview.js"
 
 # Generar metadata de archivos
 echo "Generando metadata de archivos"
 /bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$content_path/scripts/allFiles.json"
 
 # Reemplazar en los archivo
-/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path"
-
-# Ejecutar generarHtml.js
-/bin/node "$app_path/dataview/generarHtml.js" "https://example.com"
+/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" \
+    | xargs -I {} bash -c "/bin/node '$app_path/dataview/generarHtml.js' {}"
 
 # Buildear la pagina
 npx quartz build
