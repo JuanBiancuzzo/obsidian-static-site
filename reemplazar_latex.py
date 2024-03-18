@@ -98,8 +98,8 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
                 continue
             imagen.write(linea.replace("\n", ""))
 
-    print(nombreArchivo, end = ":")
-    print(".".join(nombreImagen.split(".")[:-1]))
+    nombreImagen = ".".join(nombreImagen.split(".")[:-1])
+    print(f"{nombreArchivo}:{nombreImagen}")
 
 def procesarArchivo(index, nombreArchivo, directorio):
     nombreTemp = f"{directorio}/temp.txt"

@@ -54,17 +54,30 @@ mkdir "$content_path/img"
 cd "$content_path/img"
 
 /bin/python3 "$app_path/reemplazar_latex.py" "$content_path" \
-    | xargs -I {} bash -c "/bin/bash latex2svg.sh {}" # fijarme si se puede simplificar bash latex2svg.sh
+    | xargs -I {} /bin/bash "$app_path/latex2svg.sh" {}
 
 cd "$app_path"
 
 # Generar metadata de archivos
 echo "Generando metadata de archivos"
-/bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$content_path/scripts/allFiles.json"
+/bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$app_path/dataview/allFiles.json"
 
 # Reemplazar en los archivo
-/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" \
-    | xargs -I {} bash -c "/bin/node '$app_path/dataview/generarHtml.js' {}"
+mkdir "$content_path/dataview"
+cd "$app_path/dataview"
+
+/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" > "$app_path/dataview/query.txt"
+
+mkdir temp
+cp "index.html" "./temp/"
+cp "generarHtml.js" "./temp/"
+cp "dataview.js" "./temp/"
+cd temp
+
+/bin/node "generarHtml.js" "$app_path/dataview/query.txt" "$app_path/dataview/temp"
+    # | xargs -I {} bash -c "/bin/node '$app_path/dataview/generarHtml.js' {}"
+
+cd "$app_path"
 
 # Buildear la pagina
 npx quartz build

@@ -82,8 +82,9 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 scriptActual = []
                 id = f"{PREFIX_DATAVIEW}-{contador}"
 
-                temp.write(f"\n\n<div class='{CLASS}' id='{id}'>\n\n")
-                temp.write("\n\n</div>\n\n")
+                temp.write(f"\n\n<div class='dataview'>\n")
+                temp.write(f"\n\n<script {id}>\n\n")
+                temp.write(f"\n</div>\n")
                 temp.write(linea[indexPatron + len(PATRON_FINAL):])
 
                 contador += 1
@@ -93,34 +94,38 @@ def procesarArchivo(index, nombreArchivo, directorio):
 
     if len(scripts) > 0:
         directorioRelativo = obtenerDirectorioRelativo(nombreArchivoRelativo)
-        scriptName = f"scripts/dataviewScriptFile{index}.js"
 
-        temp.write(f"\n\n<script src='{directorioRelativo}/{scriptName}'></script>\n\n")
+        for i, data in enumerate(scripts):
+            nombreScript = f"{directorio}/dataview/dataviewScriptFile{index}_{i}"
+            scriptFile = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
 
-
-        scriptFile = open(f"{directorio}/{scriptName}", "w", encoding = "ISO-8859-1")
-
-        for data in scripts:
             id = data["id"]
             script = data["script"]
 
-            scriptFile.write(f"function dataviewFunc{id}(dv) " + "{\n")
+            scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
+
+            scriptFile.write("\ttry{")
+            scriptFile.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
 
             for linea in script:
-                scriptFile.write(linea)
+                scriptFile.write(f"\t{linea}")
+
+            scriptFile.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
 
             scriptFile.write("}\n")
-            scriptFile.write(f"\ndataviewFunc{id}(new Dataview('{PREFIX_DATAVIEW}-{id}', '{nombreArchivoRelativo}'));\n")
-            scriptFile.write("\n\n")
 
-        scriptFile.close()
+            scriptFile.close()
+
+            print(f"{nombreArchivo}:{nombreScript}")
+
 
     archivo.close()
     temp.close()
 
     if len(scripts) > 0:
-        print(f"Procesando dataview: {nombreArchivoRelativo}")
         os.replace(nombreTemp, nombreArchivo)
+    else:
+        os.remove(nombreTemp)
 
 
 def main(argv):
@@ -140,9 +145,6 @@ def main(argv):
         if filtrar(archivo, config):
             continue
         procesarArchivo(index, archivo, directorio)
-
-    os.remove(f"{directorio}/temp.txt")
-
 
 if __name__ == "__main__":
     main(sys.argv)

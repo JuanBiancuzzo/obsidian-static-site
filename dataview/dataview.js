@@ -1,10 +1,7 @@
 class Dataview {
-    constructor(target_id, current_file) {
-        this.target_id = target_id;
-        this.root = document.getElementById(target_id);
+    constructor(root, current_file) {
+        this.root = root;
         this.current_file = current_file;
-
-        console.log(allFiles);
     }
 
     log(texto) {
@@ -35,7 +32,9 @@ class Dataview {
     // Render
 
     el(element, text) {
-        this.log("el")
+        let nuevoElemento = document.createElement(element);
+        nuevoElemento.innerText = text;
+        this.root.append(nuevoElemento);
     }
 
     header(level, text) {
@@ -162,3 +161,6 @@ class Dataview {
         this.log("evaluate");
     }
 }
+
+
+
