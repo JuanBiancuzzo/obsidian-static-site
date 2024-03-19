@@ -24,16 +24,8 @@ async function main(argv) {
         return;
     }
 
-    let query = argv[2];
-    let data = [];
-    fs.read(query, "ISO-8859-1", (_, data) => {
-        data.push([data.split(":")]);
-    });
-
-    if (argv.length <= 3) {
-        let directorio = argv[1];
-        pagina = `file://${directorio}/${pagina}`;
-    }
+    let data = fs.readFileSync(argv[2]).toString();
+    data = data.split("\n");
 
     const buscador = await puppeteer.launch({
         executablePath: "/usr/bin/google-chrome-stable",
@@ -44,13 +36,19 @@ async function main(argv) {
 
     const paginaBuscador = await buscador.newPage();
 
-    for (let [archivo, javascriptFile] of data) {
-        let funcion = await importarFuncion(`${javascriptFile}.html`);
+    for (let linea of data) {
+        let lineaSplit = linea.split(":");
+
+        let archivo = lineaSplit[0];
+        let javascriptFile = lineaSplit[1];
+
+        if (!archivo || !javascriptFile)
+            continue;
+
+        let funcion = await importarFuncion(`${javascriptFile}.js`);
         let contenido = await conseguirContenido(paginaBuscador, funcion);
 
-        fs.writeFile(`${javascriptFile}.html`, contenido, (err) => {
-            if (err) throw err;
-        });
+        fs.writeFileSync(`${javascriptFile}.html`, contenido);
 
         console.log(`${archivo}:${javascriptFile}`);
     }

@@ -1,4 +1,4 @@
-class Dataview {
+export default class Dataview {
     constructor(root, current_file) {
         this.root = root;
         this.current_file = current_file;

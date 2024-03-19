@@ -102,7 +102,7 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
             id = data["id"]
             script = data["script"]
 
-            scriptFile.write("export Dataview from './dataview.js';\n\n")
+            scriptFile.write("import Dataview from './dataview.js';\n\n")
             scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
 
             scriptFile.write("\ttry{")
