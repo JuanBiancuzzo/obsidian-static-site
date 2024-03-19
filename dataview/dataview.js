@@ -1,7 +1,8 @@
-export default class Dataview {
-    constructor(root, current_file) {
+class Dataview {
+    constructor(root, metadata, current_file) {
         this.root = root;
         this.current_file = current_file;
+        this.metadata = metadata;
     }
 
     log(texto) {
@@ -11,7 +12,6 @@ export default class Dataview {
     }
 
     // Query
-
     current() {
         this.log("current");
     }

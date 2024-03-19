@@ -62,16 +62,14 @@ cd "$app_path"
 echo "Generando metadata de archivos"
 /bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$app_path/dataview/allFiles.json"
 
-# Reemplazar en los archivo
-mkdir "$content_path/dataview"
-cd "$app_path/dataview"
+# mkdir "$content_path/dataview"
+# cp "$app_path/dataview/allFiles.json" "$content_path/dataview/allFiles.json"
 
+# Reemplazar en los archivo
 /bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "$app_path/dataview/query.txt"
 
-/bin/node "generarHtml.js" "$app_path/dataview/query.txt" \
+/bin/node "$app_path/dataview/generarHtml.js" "$app_path/dataview/query.txt" "$app_path/dataview/allFiles.json" \
     | xargs -I {} /bin/python3 "$app_path/reemplazar_por_html.py" {}
-
-cd "$app_path"
 
 # Buildear la pagina
 npx quartz build

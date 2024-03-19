@@ -8,6 +8,7 @@ def main(argv):
         print("No se ingreso argumentos")
         return -1
 
+    print(argv[1])
     nombreArchivo, htmlResultado = argv[1].split(":")
 
     print(f"Procesando dataview: {nombreArchivo}")
@@ -16,8 +17,8 @@ def main(argv):
     id = f"{PREFIX_DATAVIEW}-{contador}"
     patron = f"<script {id}>"
 
-    nombreTemp = "/".join(nombreArchivo.split("/")[-1])
-    nombreTemp += f"/temp"
+    nombreTemp = "/".join(nombreArchivo.split("/")[:-1])
+    nombreTemp += "/temp"
 
     archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
     temp = open(nombreTemp, "w", encoding = "ISO-8859-1")

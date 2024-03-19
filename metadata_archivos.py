@@ -1,5 +1,6 @@
 import sys
 import os
+import json
 
 class GenArchivos:
     def __init__(self, directorio):
@@ -52,24 +53,19 @@ def main(argv):
     allFiles = argv[2]
     generador = GenArchivos(directorio)
 
-    metadataFile = open(allFiles, "w", encoding = "ISO-8859-1")
-    metadataFile.write("{\n\tfiles: [\n")
-
+    metadata = {
+        'files': [],
+    }
 
     for index, archivo in enumerate(generador):
         if filtrar(archivo, config):
             continue
 
-        metadata = procesarArchivo(index, archivo, directorio)
+        metadataArchivo = procesarArchivo(index, archivo, directorio)
+        metadata["files"].append(metadataArchivo)
 
-        metadataFile.write("\t\t{\n")
-        for key in metadata:
-            metadataFile.write(f"\t\t\t'{key}': '{metadata[key]}',\n")
-
-        metadataFile.write("\t\t},\n")
-
-    metadataFile.write("\t\n]\n}\n")
-    metadataFile.close()
+    with open(allFiles, "w", encoding = "ISO-8859-1") as metadataFile:
+        json.dump(metadata, metadataFile, ensure_ascii=False)
 
 if __name__ == "__main__":
     main(sys.argv)

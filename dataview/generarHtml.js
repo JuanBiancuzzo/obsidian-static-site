@@ -4,13 +4,13 @@ import fs from "fs";
 const DATAVIEW_TAG_ID = "div";
 const HTMLFILE = "file:///usr/src/app/dataview/index.html";
 
-async function conseguirContenido(pagina, dataviewFunction) {
+async function conseguirContenido(pagina, dataviewFunction, metadata) {
     await pagina.goto(HTMLFILE, { waitUntil: "domcontentloaded" });
 
     const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
     await pagina.evaluate(dataviewFunction, dataviewTag);
 
-    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
+    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag, metadata);
 }
 
 async function importarFuncion(javascriptFile) {
@@ -19,13 +19,16 @@ async function importarFuncion(javascriptFile) {
 }
 
 async function main(argv) {
-    if (argv.length <= 2) {
+    if (argv.length <= 3) {
         console.log("No se pasaron suficientes argumentos");
         return;
     }
 
     let data = fs.readFileSync(argv[2]).toString();
     data = data.split("\n");
+
+    let metadata = fs.readFileSync(argv[3]);
+    metadata = JSON.parse(metadata);
 
     const buscador = await puppeteer.launch({
         executablePath: "/usr/bin/google-chrome-stable",
@@ -46,7 +49,7 @@ async function main(argv) {
             continue;
 
         let funcion = await importarFuncion(`${javascriptFile}.js`);
-        let contenido = await conseguirContenido(paginaBuscador, funcion);
+        let contenido = await conseguirContenido(paginaBuscador, funcion, metadata);
 
         fs.writeFileSync(`${javascriptFile}.html`, contenido);
 

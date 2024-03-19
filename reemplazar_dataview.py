@@ -44,23 +44,24 @@ def obtenerDirectorioRelativo(nombreArchivo):
         )
     )
 
-def crearScript(index, id, script, nombreArchivo, outputdir):
+def crearScript(index, id, script, nombreArchivo, directorio, outputdir):
     nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
     archivojs = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
 
-    dataviewjs = open(f"{outputdir}/dataview.js", encoding = "utf-8")
+    archivojs.write(f"export default async function dataviewFunc{id}(root, metadata) " + "{\n")
+
+    dataviewjs = open(f"{outputdir}/dataview.js", "r", encoding = "utf-8")
 
     for linea in dataviewjs.readlines():
-        archivojs.write(linea)
+        archivojs.write(f"\t{linea}")
     archivojs.write("\n\n")
 
     dataviewjs.close()
 
-    archivojs.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
 
     archivojs.write("\ttry{")
-    nombreArchivoRelativo = obtenerDirectorioRelativo(nombreArchivo)
-    archivojs.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
+    nombreArchivoRelativo = nombreArchivo.replace(directorio, '')
+    archivojs.write(f"\n\tconst dv = new Dataview(root, metadata, '{nombreArchivoRelativo}');\n")
 
     for linea in script:
         archivojs.write(f"\t{linea}")
@@ -72,7 +73,7 @@ def crearScript(index, id, script, nombreArchivo, outputdir):
     archivojs.write("\troot.append(h5);\n")
 
     archivojs.write("\tlet p = document.createElement('p');\n")
-    archivojs.write("\tp.innerText = `Con: ${error}`;\n")
+    archivojs.write("\tp.innerText = `${error}`;\n")
     archivojs.write("\troot.append(p);\n")
 
     archivojs.write("}\n}\n")
@@ -110,7 +111,7 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
                 indexPatron = linea.index(PATRON_FINAL)
 
                 script.append(linea[:indexPatron])
-                crearScript(index, contador, script, nombreArchivo, outputdir)
+                crearScript(index, contador, script, nombreArchivo, directorio, outputdir)
                 script = []
 
                 id = f"{PREFIX_DATAVIEW}-{contador}"
