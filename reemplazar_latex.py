@@ -33,21 +33,6 @@ def filtrar(archivo, config):
             return True
     return False
 
-def definirNombreImagen(nombreArchivo, directorio):
-    path = nombreArchivo.split("/")
-    directorio = directorio + "/img"
-    nombreArchivoSinExt = ".".join(path[-1].split(".")[:-1])
-    nombreProvisorio = nombreArchivoSinExt
-
-    nombreImagen = lambda nombre: f"{directorio}/{nombre}.{EXTENSION}"
-
-    version = 1
-    while os.path.exists(nombreImagen(nombreProvisorio)):
-        nombreProvisorio = f"{nombreArchivoSinExt} ({version})" 
-        version += 1
-
-    return nombreImagen(nombreProvisorio)
-
 def cambiarExtension(nombreArchivo, ext):
     path = nombreArchivo.split("/")
     directorio = "/".join(path[:-1])
@@ -69,7 +54,7 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
     contenido[-1] = contenido[-1].replace(PATRON_FINAL, "", 1)
 
     preambulo = [
-        "\\documentclass[tikz]{standalone}",
+        "\\documentclass[tikz, dvipsnames]{standalone}",
         "\\usepackage{tikz}",
         "\\usepackage{xcolor}",
         "\\color{white}",
@@ -132,15 +117,10 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 indexPatron = linea.index(PATRON_FINAL) + len(PATRON_FINAL)
 
                 imagen.append(linea[:indexPatron])
-                # nombreImagen = definirNombreImagen(nombreArchivo, directorio)
                 nombreImagen = f"{directorio}/img/imagen ({index},{cantidad}).{EXTENSION}"
                 procesarImagen(nombreArchivo, nombreImagen, imagen)
                 imagen = []
 
-                # nombreImagenFinal = cambiarExtension(
-                #    nombreImagen.replace(directorio + '/', '', 1), 
-                #    EXTENSION_FINAL
-                #)
                 nombreImagenFinal = f"img/imagen ({index},{cantidad}).{EXTENSION_FINAL}"
 
                 temp.write('\n\n<div class="tikz_svg">\n\n')
