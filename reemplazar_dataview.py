@@ -46,25 +46,32 @@ def obtenerDirectorioRelativo(nombreArchivo):
 
 def crearScript(index, id, script, nombreArchivo, outputdir):
     nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
-    scriptFile = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
+    archivojs = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
 
-    scriptFile.write("import Dataview from './dataview.js';\n\n")
-    scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
+    dataviewjs = open(f"{outputdir}/dataview.js", encoding = "utf-8")
 
-    scriptFile.write("\ttry{")
+    for linea in dataviewjs.readlines():
+        archivojs.write(linea)
+    archivojs.write("\n\n")
+
+    dataviewjs.close()
+
+    archivojs.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
+
+    archivojs.write("\ttry{")
     nombreArchivoRelativo = obtenerDirectorioRelativo(nombreArchivo)
-    scriptFile.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
+    archivojs.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
 
     for linea in script:
-        scriptFile.write(f"\t{linea}")
+        archivojs.write(f"\t{linea}")
 
-        scriptFile.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
+        archivojs.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
 
-        scriptFile.write("}\n")
+        archivojs.write("}\n")
 
-        scriptFile.close()
+    archivojs.close()
 
-        print(f"{nombreArchivo}:{nombreScript}")
+    print(f"{nombreArchivo}:{nombreScript}")
 
 def procesarArchivo(index, nombreArchivo, directorio, outputdir):
     nombreTemp = f"{directorio}/temp.txt"
@@ -75,7 +82,7 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
     archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
     temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
 
-    scriptActual = []
+    script = []
     contador = 0
     for linea in archivo.readlines():
         if not patronEncontrado:
@@ -84,7 +91,7 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
                 indexPatron = linea.index(PATRON_INICIAL)
                 
                 temp.write(linea[:indexPatron])
-                scriptActual.append(linea[indexPatron + len(PATRON_INICIAL):])
+                script.append(linea[indexPatron + len(PATRON_INICIAL):])
 
             else:
                 temp.write(linea)
@@ -95,9 +102,9 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
                 patronEncontrado = False
                 indexPatron = linea.index(PATRON_FINAL)
 
-                scriptActual.append(linea[:indexPatron])
-                crearScript(index, contador, scriptActual, nombreArchivo, outputdir)
-                scriptActual = []
+                script.append(linea[:indexPatron])
+                crearScript(index, contador, script, nombreArchivo, outputdir)
+                script = []
 
                 id = f"{PREFIX_DATAVIEW}-{contador}"
 
@@ -109,7 +116,7 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
                 contador += 1
 
             else:
-                scriptActual.append(linea)
+                script.append(linea)
 
     archivo.close()
     temp.close()
