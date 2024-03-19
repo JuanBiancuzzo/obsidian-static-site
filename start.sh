@@ -69,8 +69,7 @@ cd "$app_path/dataview"
 /bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "$app_path/dataview/query.txt"
 
 /bin/node "generarHtml.js" "$app_path/dataview/query.txt" \
-    | xargs -n1 bash -c '/bin/python3 /usr/src/app/reemplazar_por_html.py $0' 
-    # | xargs -I {} bash -c "/bin/node '$app_path/dataview/generarHtml.js' {}"
+    | xargs -I {} /bin/python3 "$app_path/reemplazar_por_html.py" {}
 
 cd "$app_path"
 
