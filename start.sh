@@ -66,15 +66,10 @@ echo "Generando metadata de archivos"
 mkdir "$content_path/dataview"
 cd "$app_path/dataview"
 
-/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" > "$app_path/dataview/query.txt"
+/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "$app_path/dataview/query.txt"
 
-mkdir temp
-cp "index.html" "./temp/"
-cp "generarHtml.js" "./temp/"
-cp "dataview.js" "./temp/"
-cd temp
-
-/bin/node "generarHtml.js" "$app_path/dataview/query.txt" "$app_path/dataview/temp"
+/bin/node "generarHtml.js" "$app_path/dataview/query.txt" 
+    | xargs -I {} bash -c "$app_path/reemplazar_por_html.py" {}
     # | xargs -I {} bash -c "/bin/node '$app_path/dataview/generarHtml.js' {}"
 
 cd "$app_path"

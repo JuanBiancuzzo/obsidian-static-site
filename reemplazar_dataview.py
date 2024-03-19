@@ -44,7 +44,7 @@ def obtenerDirectorioRelativo(nombreArchivo):
         )
     )
 
-def procesarArchivo(index, nombreArchivo, directorio):
+def procesarArchivo(index, nombreArchivo, directorio, outputdir):
     nombreTemp = f"{directorio}/temp.txt"
     nombreArchivoRelativo = nombreArchivo.replace(directorio, '')
 
@@ -96,12 +96,13 @@ def procesarArchivo(index, nombreArchivo, directorio):
         directorioRelativo = obtenerDirectorioRelativo(nombreArchivoRelativo)
 
         for i, data in enumerate(scripts):
-            nombreScript = f"{directorio}/dataview/dataviewScriptFile{index}_{i}"
+            nombreScript = f"{outputdir}/dataviewScriptFile{index}_{i}"
             scriptFile = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
 
             id = data["id"]
             script = data["script"]
 
+            scriptFile.write("export Dataview from './dataview.js';\n\n")
             scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
 
             scriptFile.write("\ttry{")
@@ -129,7 +130,7 @@ def procesarArchivo(index, nombreArchivo, directorio):
 
 
 def main(argv):
-    if len(argv) <= 1:
+    if len(argv) <= 2:
         print("No se paso un directorio a buscar")
         return -1
 
@@ -139,12 +140,13 @@ def main(argv):
     }
 
     directorio = argv[1]
+    outputdir = argv[2]
     generador = GenArchivos(directorio)
 
     for index, archivo in enumerate(generador):
         if filtrar(archivo, config):
             continue
-        procesarArchivo(index, archivo, directorio)
+        procesarArchivo(index, archivo, directorio, outputdir)
 
 if __name__ == "__main__":
     main(sys.argv)

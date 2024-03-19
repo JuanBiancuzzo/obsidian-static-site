@@ -1,17 +1,21 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
-import dataviewFunction from "./modificador.js"
 
 const DATAVIEW_TAG_ID = "div";
+const HTMLFILE = "file:///usr/src/app/dataview/index.html";
 
-async function conseguirContenido(pagina, paginaURL) {
-    await pagina.goto(paginaURL, { waitUntil: "domcontentloaded" });
+async function conseguirContenido(pagina, dataviewFunction) {
+    await pagina.goto(HTMLFILE, { waitUntil: "domcontentloaded" });
 
     const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
     await pagina.evaluate(dataviewFunction, dataviewTag);
 
-    let contenido = await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
-    console.log(contenido);
+    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
+}
+
+async function importarFuncion(javascriptFile) {
+    const module = await import(javascriptFile);
+    return module.default;
 }
 
 async function main(argv) {
@@ -21,9 +25,9 @@ async function main(argv) {
     }
 
     let query = argv[2];
-    let workdir = argv[3];
+    let data = [];
     fs.read(query, "ISO-8859-1", (_, data) => {
-        let [archivo, javascriptArchvo] = data.split(":");
+        data.push([data.split(":")]);
     });
 
     if (argv.length <= 3) {
@@ -40,7 +44,17 @@ async function main(argv) {
 
     const paginaBuscador = await buscador.newPage();
 
-    await conseguirContenido(paginaBuscador, url);
+    for (let [archivo, javascriptFile] of data) {
+        let funcion = await importarFuncion(`${javascriptFile}.html`);
+        let contenido = await conseguirContenido(paginaBuscador, funcion);
+
+        fs.writeFile(`${javascriptFile}.html`, contenido, (err) => {
+            if (err) throw err;
+        });
+
+        console.log(`${archivo}:${javascriptFile}`);
+    }
+
 
     await buscador.close();
 }

@@ -2,7 +2,6 @@ import sys
 import os
 
 class GenArchivos:
-    
     def __init__(self, directorio):
         self.iter = os.walk(directorio)
         self.files = []
