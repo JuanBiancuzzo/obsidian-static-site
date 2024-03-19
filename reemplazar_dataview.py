@@ -44,6 +44,28 @@ def obtenerDirectorioRelativo(nombreArchivo):
         )
     )
 
+def crearScript(index, id, script, nombreArchivo, outputdir):
+    nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
+    scriptFile = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
+
+    scriptFile.write("import Dataview from './dataview.js';\n\n")
+    scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
+
+    scriptFile.write("\ttry{")
+    nombreArchivoRelativo = obtenerDirectorioRelativo(nombreArchivo)
+    scriptFile.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
+
+    for linea in script:
+        scriptFile.write(f"\t{linea}")
+
+        scriptFile.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
+
+        scriptFile.write("}\n")
+
+        scriptFile.close()
+
+        print(f"{nombreArchivo}:{nombreScript}")
+
 def procesarArchivo(index, nombreArchivo, directorio, outputdir):
     nombreTemp = f"{directorio}/temp.txt"
     nombreArchivoRelativo = nombreArchivo.replace(directorio, '')
@@ -52,7 +74,6 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
 
     archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
     temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
-    scripts = []
 
     scriptActual = []
     contador = 0
@@ -75,11 +96,9 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
                 indexPatron = linea.index(PATRON_FINAL)
 
                 scriptActual.append(linea[:indexPatron])
-                scripts.append({
-                    "id": contador,
-                    "script": scriptActual,
-                })
+                crearScript(index, contador, scriptActual, nombreArchivo, outputdir)
                 scriptActual = []
+
                 id = f"{PREFIX_DATAVIEW}-{contador}"
 
                 temp.write(f"\n\n<div class='dataview'>\n")
@@ -92,38 +111,10 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
             else:
                 scriptActual.append(linea)
 
-    if len(scripts) > 0:
-        directorioRelativo = obtenerDirectorioRelativo(nombreArchivoRelativo)
-
-        for i, data in enumerate(scripts):
-            nombreScript = f"{outputdir}/dataviewScriptFile{index}_{i}"
-            scriptFile = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
-
-            id = data["id"]
-            script = data["script"]
-
-            scriptFile.write("import Dataview from './dataview.js';\n\n")
-            scriptFile.write(f"export default async function dataviewFunc{id}(root) " + "{\n")
-
-            scriptFile.write("\ttry{")
-            scriptFile.write(f"\n\tconst dv = new Dataview(root, '{nombreArchivoRelativo}');\n")
-
-            for linea in script:
-                scriptFile.write(f"\t{linea}")
-
-            scriptFile.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
-
-            scriptFile.write("}\n")
-
-            scriptFile.close()
-
-            print(f"{nombreArchivo}:{nombreScript}")
-
-
     archivo.close()
     temp.close()
 
-    if len(scripts) > 0:
+    if contador > 0:
         os.replace(nombreTemp, nombreArchivo)
     else:
         os.remove(nombreTemp)
