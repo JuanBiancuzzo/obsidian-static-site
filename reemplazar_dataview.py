@@ -65,10 +65,17 @@ def crearScript(index, id, script, nombreArchivo, outputdir):
     for linea in script:
         archivojs.write(f"\t{linea}")
 
-        archivojs.write("\t} catch (_) {\n\t root.innerText = 'Hubo un error'; \n}")
+    archivojs.write("\t} catch (error) {\n")
 
-        archivojs.write("}\n")
+    archivojs.write("\tlet h5 = document.createElement('h5');\n")
+    archivojs.write("\th5.innerText = 'Hubo un error';\n")
+    archivojs.write("\troot.append(h5);\n")
 
+    archivojs.write("\tlet p = document.createElement('p');\n")
+    archivojs.write("\tp.innerText = `Con: ${error}`;\n")
+    archivojs.write("\troot.append(p);\n")
+
+    archivojs.write("}\n}\n")
     archivojs.close()
 
     print(f"{nombreArchivo}:{nombreScript}")
