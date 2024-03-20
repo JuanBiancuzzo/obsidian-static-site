@@ -59,7 +59,7 @@ def procesarArchivo(nombreArchivo, outgoingLinks):
     #   * tags -> las mismas q etags (la tag es #nombre)
     #   * tasks 
     return {
-        "nombre": nombreArchivo.replace(directorio, ""),
+        "nombre": nombreArchivo,
     }
 
 def encontrarArchivo(metadata):
