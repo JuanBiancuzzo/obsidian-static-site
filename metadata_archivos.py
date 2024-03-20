@@ -54,7 +54,7 @@ def procesarArchivo(nombreArchivo, outgoingLinks):
     #       * path
     #       * subpath
     #       * type -> file
-    #   * path -> folder + name + . + ext
+    #   * path -> folder + / + name + . + ext
     #   * size
     #   * tags -> las mismas q etags (la tag es #nombre)
     #   * tasks 

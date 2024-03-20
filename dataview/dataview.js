@@ -2,7 +2,7 @@ class Dataview {
     constructor(root, metadata, current_file) {
         this.root = root;
         this.current_file = current_file;
-        this.metadata = metadata;
+        this.metadata = metadata.files;
     }
 
     log(texto) {
@@ -13,40 +13,115 @@ class Dataview {
 
     // Query
     current() {
-        this.log("current");
+        page(this.current_file);
     }
 
-    pages(source) {
-        this.log("pages");
+    pages(source = undefined) {
+        let resultado = this.metadata.slice();
+        if (!source)
+            return resultado;
+
+        // Agregar los casos con los parentesis
+        let comandos = source.split(" ")
+            .map(cmd => cmd.trim());
+
+        
+
+        return resultado;
     }
 
-    pagePaths(source) {
-        this.log("pagePaths");
+    pagePaths(source = undefined) {
+        return this.pages(source).map(archivo => archivo.file.path);
     }
 
 
     page(path) {
-        this.log("page");
+        let resultados = this.pages().filter(archivo => {
+            let archivoPath = archivo.file.path;
+            let archivoPathSinExt = `${archivo.file.folder}/${archivo.file.name}`;
+            return path == archivoPath || path == archivoPathSinExt;
+        });
+
+        return resultados.length > 0 ? resultados[0] : undefined;
+    }
+
+    closestFile(nameOrPath) {
+        return this.pages().filter(archivo => archivo.file.path.includes(nameOrPath))[0];
+    }
+
+    slitearLinks(string) {
+        let resultado = [];
+        let inicioEncontrado = false;
+        let index;
+
+        while (true) {
+            index = (inicioEncontrado) ? string.indexOf("]]") + 2 : string.indexOf("[[");
+            if (index < 0) {
+                resultado.push(string);
+                break;
+            }
+
+            inicioEncontrado = !inicioEncontrado;
+            resultado.push(string.slice(0, index));
+            string = string.slice(index);
+        }
+        return resultado;
+    }
+
+    crearLink(string) {
+        string = string.slice(2, string.length - 2);
+        let [nombre, nombreSustituto] = [string, string];
+        let archivo = this.closestFile(nombre);
+
+        let link = document.createElement("a");
+        link.setAttribute("data-slug", archivo.file.path);
+        link.classList.add("internal");
+
+        if (nombre.includes("|")) {
+            [nombre, nombreSustituto] = nombre.split("|");
+            link.classList.add("alias");
+        }
+
+        link.innerText = nombreSustituto;
+        return link;
+    }
+
+    // Por ahora unicamente links internos
+    parsearTexto(texto) {
+        return slitearLinks(texto).map(subtexto => {
+            if (subtexto.includes("[[") && subtexto.includes("]]"))
+                return crearLink(subtexto);
+            return subtexto;
+        });
     }
 
     // Render
-
-    el(element, text) {
+    el(element, text, opt = undefined) {
         let nuevoElemento = document.createElement(element);
-        nuevoElemento.innerText = text;
+        if (opt) {
+            for (let [key, value] of opt) {
+                link.setAttribute(key, value);
+            }
+        }
+
+        let textoParseado = parsearTexto(text);
+        for (let texto of textoParseado) {
+            nuevoElemento.append(texto);
+        }
+
         this.root.append(nuevoElemento);
     }
 
     header(level, text) {
-        this.log("header");
+        this.el(`h${level}`, text);
     }
 
     paragraph(text) {
-        this.log("paragraph");
+        this.el("p", text);
     }
 
     span(text) {
-        this.log("span");
+        this.el("span", text);
     }
 
     execute(source) {
@@ -62,9 +137,16 @@ class Dataview {
     }
 
     // Dataviews
-
     list(lista) {
-        this.log("list");
+        let ul = document.createElement("ul");
+
+        for (let elemento of lista) {
+            let li = document.createElement("li");
+            li.append(this.elementoParseado("span", elemento));
+            ul.append(li);
+        }
+
+        this.root.append(ul);
     }
 
     taskList(tasks, groupByFile) {
