@@ -2,7 +2,7 @@ import sys
 import os
 
 PREFIX_DATAVIEW = "dataview"
-ENCODING = "ISO-8859-1"
+ENCODING = "utf-8"
 
 def main(argv):
     if len(argv) <= 1:

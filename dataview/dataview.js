@@ -25,14 +25,14 @@ class Dataview {
         let comandos = source.split(" ")
             .map(cmd => cmd.trim());
 
-        if ("#" in source) {
-            tagBuscado = source.replaceAll('#', '').trim();
+        if (source.includes("#")) {
+            let tagBuscado = source.replaceAll('#', '').trim();
             resultado = resultado.filter(archivo => {
                 return archivo.file.tags.some(tag => tag == tagBuscado);
             });
 
         } else {
-            folderBuscada = source.replaceAll('"', '').trim();
+            let folderBuscada = source.replaceAll('"', '').trim();
             resultado = resultado.filter(archivo => {
                 return archivo.file.path.includes(folderBuscada);
             });

@@ -3,7 +3,7 @@ import os
 
 PATRON = "$$"
 LEN_PATRON = len(PATRON)
-ENCODING = "ISO-8859-1"
+ENCODING = "utf-8"
 
 class GenArchivos:
     

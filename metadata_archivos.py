@@ -4,7 +4,7 @@ import os
 import json
 import yaml
 
-ENCODING = "ISO-8859-1"
+ENCODING = "utf-8"
 
 class GenArchivos:
     def __init__(self, directorio):

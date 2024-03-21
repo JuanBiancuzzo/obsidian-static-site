@@ -5,7 +5,7 @@ EXTENSION = "tex"
 EXTENSION_FINAL = "svg"
 PATRON_INICIAL = "```tikz"
 PATRON_FINAL = "```"
-ENCODING = "ISO-8859-1"
+ENCODING = "utf-8"
 
 class GenArchivos:
     
@@ -160,8 +160,6 @@ def main(argv):
         if filtrar(archivo, config):
             continue
         procesarArchivo(i, archivo, directorio)
-
-    os.remove(f"{directorio}/temp.txt")
 
 
 if __name__ == "__main__":

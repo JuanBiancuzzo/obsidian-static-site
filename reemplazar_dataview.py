@@ -5,7 +5,7 @@ PATRON_INICIAL = "```dataviewjs"
 PATRON_FINAL = "```"
 PREFIX_DATAVIEW = "dataview"
 CLASS = "dataview"
-ENCODING = "ISO-8859-1"
+ENCODING = "utf-8"
 
 class GenArchivos:
     

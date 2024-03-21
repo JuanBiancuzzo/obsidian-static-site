@@ -35,7 +35,7 @@ def procesarArchivo(nombreArchivo):
     with open(nombreArchivo, "r", encoding = ENCODING_INICIAL) as archivo:
         with open(nombreTemp, "w", encoding = ENCODING) as archivoDecodeficado:
             for linea in archivo.readlines():
-                linea = linea.decode(ENCODING_INICIAL).encode(ENCODING)
+                linea = linea.encode(ENCODING_INICIAL).decode(ENCODING)
                 archivoDecodeficado.write(linea)
 
     os.replace(nombreTemp, nombreArchivo)
