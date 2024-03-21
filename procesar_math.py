@@ -3,6 +3,7 @@ import os
 
 PATRON = "$$"
 LEN_PATRON = len(PATRON)
+ENCODING = "ISO-8859-1"
 
 class GenArchivos:
     
@@ -36,8 +37,8 @@ def procesarArchivo(nombreArchivo, directorio):
 
     patronEncontrado = False
 
-    archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
-    temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
+    archivo = open(nombreArchivo, "r", encoding = ENCODING)
+    temp = open(nombreTemp, "w", encoding = ENCODING)
     ecuacion = []
 
     for linea in archivo.readlines():

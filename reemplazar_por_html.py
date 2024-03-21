@@ -2,6 +2,7 @@ import sys
 import os
 
 PREFIX_DATAVIEW = "dataview"
+ENCODING = "ISO-8859-1"
 
 def main(argv):
     if len(argv) <= 1:
@@ -20,8 +21,8 @@ def main(argv):
     nombreTemp = "/".join(nombreArchivo.split("/")[:-1])
     nombreTemp += "/temp"
 
-    archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
-    temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
+    archivo = open(nombreArchivo, "r", encoding = ENCODING)
+    temp = open(nombreTemp, "w", encoding = ENCODING)
 
     encontrado = False
 
@@ -29,7 +30,7 @@ def main(argv):
         if not encontrado and patron in linea:
             encontrado = True
 
-            html = open(f"{htmlResultado}.html", "r", encoding = "utf-8")
+            html = open(f"{htmlResultado}.html", "r", encoding = ENCODING)
 
             for lineaHtml in html.readlines():
                 temp.write(lineaHtml)

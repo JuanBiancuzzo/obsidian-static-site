@@ -4,6 +4,8 @@ import os
 import json
 import yaml
 
+ENCODING = "ISO-8859-1"
+
 class GenArchivos:
     def __init__(self, directorio):
         self.iter = os.walk(directorio)
@@ -86,7 +88,9 @@ def procesarArchivo(nombreArchivo, directorio, outgoingLinks):
         },
     }
 
-    with open(f"{directorio}/{nombreArchivo}", "r", encoding = "ISO-8859-1") as archivo:
+    return metadata
+
+    with open(f"{directorio}/{nombreArchivo}", "r", encoding = ENCODING) as archivo:
         linea = archivo.readline()
         if linea.lstrip().startswith("---"):
             lineas = [ linea[linea.index("---") + 3:] ]
@@ -167,7 +171,7 @@ def main(argv):
         metadata["files"][pos]["file"]["outlinks"].append(outgoingLinks[archivo])
 
 
-    with open(allFiles, "w", encoding = "ISO-8859-1") as metadataFile:
+    with open(allFiles, "w", encoding = ENCODING) as metadataFile:
         json.dump(metadata, metadataFile, ensure_ascii=False)
 
 if __name__ == "__main__":

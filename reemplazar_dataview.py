@@ -5,6 +5,7 @@ PATRON_INICIAL = "```dataviewjs"
 PATRON_FINAL = "```"
 PREFIX_DATAVIEW = "dataview"
 CLASS = "dataview"
+ENCODING = "ISO-8859-1"
 
 class GenArchivos:
     
@@ -46,11 +47,11 @@ def obtenerDirectorioRelativo(nombreArchivo):
 
 def crearScript(index, id, script, nombreArchivo, directorio, outputdir):
     nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
-    archivojs = open(f"{nombreScript}.js", "w", encoding = "ISO-8859-1")
+    archivojs = open(f"{nombreScript}.js", "w", encoding = ENCODING)
 
     archivojs.write(f"export default async function dataviewFunc{id}(root, metadata) " + "{\n")
 
-    dataviewjs = open(f"{outputdir}/dataview.js", "r", encoding = "utf-8")
+    dataviewjs = open(f"{outputdir}/dataview.js", "r", encoding = ENCODING)
 
     for linea in dataviewjs.readlines():
         archivojs.write(f"\t{linea}")
@@ -87,8 +88,8 @@ def procesarArchivo(index, nombreArchivo, directorio, outputdir):
 
     patronEncontrado = False
 
-    archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
-    temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
+    archivo = open(nombreArchivo, "r", encoding = ENCODING)
+    temp = open(nombreTemp, "w", encoding = ENCODING)
 
     script = []
     contador = 0

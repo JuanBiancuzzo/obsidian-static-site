@@ -5,6 +5,7 @@ EXTENSION = "tex"
 EXTENSION_FINAL = "svg"
 PATRON_INICIAL = "```tikz"
 PATRON_FINAL = "```"
+ENCODING = "ISO-8859-1"
 
 class GenArchivos:
     
@@ -71,7 +72,7 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
         preambulo.append("\\circuitikzset{color=.}")
 
 
-    with open(nombreImagen, "w", encoding = "ISO-8859-1") as imagen:
+    with open(nombreImagen, "w", encoding = ENCODING) as imagen:
         for linea in preambulo:
             imagen.write(f"{linea}\n")
 
@@ -92,8 +93,8 @@ def procesarArchivo(index, nombreArchivo, directorio):
     patronEncontrado = False
     seEncontroPatron = False
 
-    archivo = open(nombreArchivo, "r", encoding = "ISO-8859-1")
-    temp = open(nombreTemp, "w", encoding = "ISO-8859-1")
+    archivo = open(nombreArchivo, "r", encoding = ENCODING)
+    temp = open(nombreTemp, "w", encoding = ENCODING)
     imagen = []
     cantidad = 0
 
@@ -138,6 +139,8 @@ def procesarArchivo(index, nombreArchivo, directorio):
 
     if seEncontroPatron:
         os.replace(nombreTemp, nombreArchivo)
+    else:
+        os.remove(nombreTemp)
 
 
 def main(argv):
