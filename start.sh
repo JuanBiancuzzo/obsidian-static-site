@@ -46,6 +46,9 @@ if ! find "$index" > /dev/null 2>&1 ; then
     done
 fi
 
+# Pasar todos los archivos a utf8
+/bin/python3 "$app_path/transformar_a_utf8.py" "$content_path"
+
 # Procesar ecuaciones matematicas para que aparezcan bien
 /bin/python3 "$app_path/procesar_math.py" "$content_path"
 
