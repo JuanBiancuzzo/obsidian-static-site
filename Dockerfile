@@ -22,8 +22,7 @@ RUN apt-get install -y pdf2svg
 RUN apt-get install -y texlive-latex-base
 RUN apt-get install -y --no-install-recommends texlive-latex-extra
 
-RUN apt-get install -y python3 # python3-pip
-# RUN pip install python-frontmatter
+RUN apt-get install -y python3 
 
 RUN apt-get install -y wget gnupg ca-certificates \
     && wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | apt-key add - \
@@ -33,6 +32,10 @@ RUN apt-get install -y wget gnupg ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 RUN which google-chrome-stable
+
+RUN apt-get update
+RUN apt-get -y install python3-pip
+RUN pip install pyyaml
 
 WORKDIR /usr/src/app
 

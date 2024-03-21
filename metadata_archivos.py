@@ -1,6 +1,8 @@
 import sys
 import os
+
 import json
+import yaml
 
 class GenArchivos:
     def __init__(self, directorio):
@@ -28,16 +30,16 @@ def filtrar(archivo, config):
             return True
     return False
 
-def procesarArchivo(nombreArchivo, outgoingLinks):
+def procesarArchivo(nombreArchivo, directorio, outgoingLinks):
     # Todos la metadata del archivo como keys en el diccionario
-    # tags: [] -> lista de tags de la pagina
+    # tags: [] -> lista de tags de la pagina sin # solo en la metadata
     # file: 
     #   * cday -> ctime pero sin contar los milisegundos, segundos, minutos ni horas
     #   * ctime -> which refers to the last time some metadata related to the file was changed.
-    #   * etags -> tags
+    #   * etags -> tags en todo el archivo
     #   * ext -> "md"
     #   * folder -> absoluta
-    #   * frontmatter -> repetir lo mismo que antes, metadata y tags
+    #   * frontmatter -> repetir lo mismo que antes, metadata y tags (sin #) solo en la metadata
     #   * inlinks
     #   * link
     #       * display -> nombre
@@ -56,11 +58,59 @@ def procesarArchivo(nombreArchivo, outgoingLinks):
     #       * type -> file
     #   * path -> folder + / + name + . + ext
     #   * size
-    #   * tags -> las mismas q etags (la tag es #nombre)
+    #   * tags -> las mismas q etags (la tag es #nombre) en todo el archivo
     #   * tasks 
-    return {
-        "nombre": nombreArchivo,
+    path = nombreArchivo
+    ext = path.split(".")[-1]
+
+    pathSinExtension = ".".join(path.split(".")[:-1])
+    pathSeparado = pathSinExtension.split("/")
+
+    name = pathSeparado[-1]
+    folder = "/".join(pathSeparado[:-1])
+
+    frontmatter = None
+
+    metadata = {
+        "file": {
+            "folder": folder,
+            "name": name,
+            "path": path,
+            "ext": ext,
+            "link": {
+                "path": path,
+                "type": "file",
+            },
+            "tags": [],
+            "etags": [],
+        },
     }
+
+    with open(f"{directorio}/{nombreArchivo}", "r", encoding = "ISO-8859-1") as archivo:
+        linea = archivo.readline()
+        if linea.lstrip().startswith("---"):
+            lineas = [ linea[linea.index("---") + 3:] ]
+            for linea in archivo.readlines():
+                if "---" in linea:
+                    lineas.append(linea[:linea.index("---")])
+                    break
+                lineas.append(linea)
+
+            frontmatter = yaml.safe_load("\n".join(lineas))
+
+    if frontmatter is not None:
+        metadata["file"]["frontmatter"] = frontmatter
+        for key in frontmatter:
+            if "tags" == key and not isinstance(frontmatter[key], list):
+                frontmatter[key] = frontmatter[key]
+            metadata[key] = frontmatter[key]
+
+        if "tags" in frontmatter:
+            for tag in frontmatter["tags"]:
+                metadata["file"]["tags"] = tag
+                metadata["file"]["etags"] = tag
+
+    return metadata
 
 def encontrarArchivo(metadata):
     pass
@@ -93,9 +143,9 @@ def main(argv):
         if filtrar(archivo, config):
             continue
 
-        archivo = archivo.replace(directorio, "")
+        archivo = archivo.replace(f"{directorio}/", "")
 
-        metadataArchivo = procesarArchivo(archivo, outgoingLinks)
+        metadataArchivo = procesarArchivo(archivo, directorio, outgoingLinks)
         metadata["files"].append(metadataArchivo)
 
     generador = GenArchivos(directorio)
@@ -103,7 +153,7 @@ def main(argv):
         if filtrar(archivo, config):
             continue
 
-        archivo = archivo.replace(directorio, "")
+        archivo = archivo.replace(f"{directorio}/", "")
         if not archivo in outgoingLinks:
             continue
 
