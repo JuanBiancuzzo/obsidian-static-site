@@ -2,7 +2,6 @@
 
 // put your custom CSS here!
 .tikz_svg,
-.dataview,
 .ecuacion {
     // Centrar
     text-align: center;
@@ -16,3 +15,7 @@
     -webkitfilter: invert(var(--darkmode-inv));
 }
 
+.dataview {
+    // Crea una barra horizontal si es necesaria
+    overflow-x: auto;
+}

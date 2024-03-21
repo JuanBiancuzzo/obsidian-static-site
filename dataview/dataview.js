@@ -25,7 +25,19 @@ class Dataview {
         let comandos = source.split(" ")
             .map(cmd => cmd.trim());
 
-        
+        if ("#" in source) {
+            tagBuscado = source.replaceAll('#', '').trim();
+            resultado = resultado.filter(archivo => {
+                return archivo.file.tags.some(tag => tag == tagBuscado);
+            });
+
+        } else {
+            folderBuscada = source.replaceAll('"', '').trim();
+            resultado = resultado.filter(archivo => {
+                return archivo.file.path.includes(folderBuscada);
+            });
+
+        }
 
         return resultado;
     }
@@ -65,6 +77,7 @@ class Dataview {
             resultado.push(string.slice(0, index));
             string = string.slice(index);
         }
+
         return resultado;
     }
 
@@ -88,15 +101,14 @@ class Dataview {
 
     // Por ahora unicamente links internos
     parsearTexto(texto) {
-        return slitearLinks(texto).map(subtexto => {
+        return this.slitearLinks(texto).map(subtexto => {
             if (subtexto.includes("[[") && subtexto.includes("]]"))
-                return crearLink(subtexto);
+                return this.crearLink(subtexto);
             return subtexto;
         });
     }
 
-    // Render
-    el(element, text, opt = undefined) {
+    genElement(element, text, opt = undefined) {
         let nuevoElemento = document.createElement(element);
         if (opt) {
             for (let [key, value] of opt) {
@@ -104,12 +116,16 @@ class Dataview {
             }
         }
 
-        let textoParseado = parsearTexto(text);
+        let textoParseado = this.parsearTexto(text);
         for (let texto of textoParseado) {
             nuevoElemento.append(texto);
         }
+        return nuevoElemento;
+    }
 
-        this.root.append(nuevoElemento);
+    // Render
+    el(element, text, opt = undefined) {
+        this.root.append(this.genElement(element, text, opt));
     }
 
     header(level, text) {
@@ -142,7 +158,7 @@ class Dataview {
 
         for (let elemento of lista) {
             let li = document.createElement("li");
-            li.append(this.elementoParseado("span", elemento));
+            li.append(this.genElement("span", elemento));
             ul.append(li);
         }
 

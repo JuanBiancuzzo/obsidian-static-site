@@ -8,9 +8,9 @@ async function conseguirContenido(pagina, dataviewFunction, metadata) {
     await pagina.goto(HTMLFILE, { waitUntil: "domcontentloaded" });
 
     const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
-    await pagina.evaluate(dataviewFunction, dataviewTag);
+    await pagina.evaluate(dataviewFunction, dataviewTag, metadata);
 
-    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag, metadata.files);
+    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
 }
 
 async function importarFuncion(javascriptFile) {
@@ -28,7 +28,7 @@ async function main(argv) {
     data = data.split("\n");
 
     let metadata = fs.readFileSync(argv[3]);
-    metadata = JSON.parse(metadata);
+    metadata = JSON.parse(metadata).files;
 
     const buscador = await puppeteer.launch({
         executablePath: "/usr/bin/google-chrome-stable",
