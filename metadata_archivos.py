@@ -96,7 +96,10 @@ def procesarArchivo(nombreArchivo, directorio, outgoingLinks):
                     break
                 lineas.append(linea)
 
-            frontmatter = yaml.safe_load("\n".join(lineas))
+            try:
+                frontmatter = yaml.safe_load("\n".join(lineas))
+            except:
+                print(f"Hubo error en la metadata de archivo: {nombreArchivo}")
 
     if frontmatter is not None:
         metadata["file"]["frontmatter"] = frontmatter

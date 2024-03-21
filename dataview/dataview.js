@@ -2,7 +2,7 @@ class Dataview {
     constructor(root, metadata, current_file) {
         this.root = root;
         this.current_file = current_file;
-        this.metadata = metadata.files;
+        this.metadata = metadata;
     }
 
     log(texto) {

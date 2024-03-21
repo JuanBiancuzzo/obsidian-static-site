@@ -10,7 +10,7 @@ async function conseguirContenido(pagina, dataviewFunction, metadata) {
     const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
     await pagina.evaluate(dataviewFunction, dataviewTag);
 
-    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag, metadata);
+    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag, metadata.files);
 }
 
 async function importarFuncion(javascriptFile) {
