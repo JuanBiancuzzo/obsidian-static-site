@@ -17,9 +17,10 @@ class Dataview {
     }
 
     pages(source = undefined) {
-        let resultado = this.metadata.slice();
         if (!source)
-            return resultado;
+            return this.metadata.slice();
+
+        let resultado;
 
         // Agregar los casos con los parentesis
         let comandos = source.split(" ")
@@ -27,13 +28,13 @@ class Dataview {
 
         if (source.includes("#")) {
             let tagBuscado = source.replaceAll('#', '').trim();
-            resultado = resultado.filter(archivo => {
+            resultado = this.metadata.filter(archivo => {
                 return archivo.file.tags.some(tag => tag == tagBuscado);
             });
 
         } else {
             let folderBuscada = source.replaceAll('"', '').trim();
-            resultado = resultado.filter(archivo => {
+            resultado = this.metadata.filter(archivo => {
                 return archivo.file.path.includes(folderBuscada);
             });
 

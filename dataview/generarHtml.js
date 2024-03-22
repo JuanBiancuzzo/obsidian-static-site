@@ -1,18 +1,23 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
 
+import { dataArrayProxyHandler } from "./dataArray";
+
 const DATAVIEW_TAG_ID = "div";
 const HTMLFILE = "file:///usr/src/app/dataview/index.html";
 
 async function conseguirContenido(pagina, dataviewFunction, metadata) {
     await pagina.goto(HTMLFILE, { waitUntil: "domcontentloaded" });
 
+    // Ejecutar el código custom en el DOM
     const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
     await pagina.evaluate(dataviewFunction, dataviewTag, metadata);
 
+    // Obtener el html de lo ejecutado
     return await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
 }
 
+// Obtiene el default de un path a un archivo js pasado por parametro
 async function importarFuncion(javascriptFile) {
     const module = await import(javascriptFile);
     return module.default;
@@ -28,7 +33,7 @@ async function main(argv) {
     data = data.split("\n");
 
     let metadata = fs.readFileSync(argv[3]);
-    metadata = JSON.parse(metadata).files;
+    metadata = new Proxy(JSON.parse(metadata).files, dataArrayProxyHandler);
 
     const buscador = await puppeteer.launch({
         executablePath: "/usr/bin/google-chrome-stable",
@@ -55,7 +60,6 @@ async function main(argv) {
 
         console.log(`${archivo}:${javascriptFile}`);
     }
-
 
     await buscador.close();
 }
