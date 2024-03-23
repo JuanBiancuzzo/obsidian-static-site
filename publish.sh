@@ -24,7 +24,7 @@ fi
 cd preprocesamiento
 if [[ $(git status --porcelain) ]] || [ "$first_flag" = "$preflag" ] || [ "$second_flag" = "$preflag" ]; then
     echo "Hay cambios en el preprocesamiento recompilando"
-    # bash publish.sh "$version"
+    bash publish.sh "$version"
 else
     echo "No hay cambios en el preprocesamiento recompilando"
 fi
@@ -32,7 +32,7 @@ fi
 cd ../procesamiento
 if [[ $(git status --porcelain) ]] || [ "$first_flag" = "$proflag" ] || [ "$second_flag" = "$proflag" ]; then
     echo "Hay cambios en el procesamiento recompilando"
-    #bash publish.sh "$version"
+    bash publish.sh "$version"
 else
     echo "No hay cambios en el procesamiento recompilando"
 fi
