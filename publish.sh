@@ -18,7 +18,7 @@ if [ "$2" ]; then
 fi
 
 if [ "$3" ]; then
-    first_flag="$3"
+    second_flag="$3"
 fi
 
 cd preprocesamiento
