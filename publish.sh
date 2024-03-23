@@ -7,10 +7,27 @@ fi
 
 version="$1"
 
-sudo docker build -t obsidian-static-site-$version .
+first_flag=""
+second_flag=""
 
-sudo docker tag obsidian-static-site-$version juanbiancuzzo/obsidian-static-site:$version
-sudo docker push juanbiancuzzo/obsidian-static-site:$version
+if [ "$2" ]; then
+    first_flag="$2"
+fi
 
-sudo docker tag obsidian-static-site-$version juanbiancuzzo/obsidian-static-site:latest
-sudo docker push juanbiancuzzo/obsidian-static-site:latest
+if [ "$3" ]; then
+    first_flag="$3"
+fi
+
+cd preprocesamiento
+if [[ $(git status --porcelain) ]] || [ "$first_flag" = "-pre" ] || ["$second_flag" = "-pre"]; then
+    echo "Hay cambios en el preprocesamiento recompilando"
+    # bash publish.sh "$version"
+fi
+
+cd ../procesamiento
+if [[ $(git status --porcelain) ]] || [ "$first_flag" = "-pre" ] || ["$second_flag" = "-pre"]; then
+    echo "Hay cambios en el procesamiento recompilando"
+    #bash publish.sh "$version"
+fi
+
+cd ..

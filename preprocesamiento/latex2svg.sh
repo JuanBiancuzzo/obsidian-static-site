@@ -1,10 +1,5 @@
 #!/bin/bash
 
-if [ -z "$1" ]; then
-    echo "No se paso ningun valor de version"
-    exit -1
-fi
-
 archivo=$(echo "$1" | cut -d':' -f1)
 imagen=$(echo "$1" | cut -d':' -f2)
 
