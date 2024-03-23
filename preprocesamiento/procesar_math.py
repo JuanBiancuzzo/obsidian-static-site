@@ -1,7 +1,7 @@
 import sys
 import os
 
-from GeneradorArchivos import GenArchivos, filtrar
+import generador_archivos 
 
 PATRON = "$$"
 LEN_PATRON = len(PATRON)
@@ -84,10 +84,10 @@ def main(argv):
     }
 
     directorio = argv[1]
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
 
     for archivo in generador:
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
         procesarArchivo(archivo, directorio)
 

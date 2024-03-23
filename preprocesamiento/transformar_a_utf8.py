@@ -4,7 +4,7 @@ import os
 ENCODING_INICIAL = "ISO-8859-1"
 ENCODING = "utf-8"
 
-from GeneradorArchivos import GenArchivos, filtrar
+import generador_archivos
 
 def procesarArchivo(nombreArchivo): 
     nombreTemp = "/".join(nombreArchivo.split("/")[:-1]) + "/temp"
@@ -28,9 +28,9 @@ def main(argv):
 
     directorio = argv[1]
 
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
     for archivo in generador:
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
         procesarArchivo(archivo)
 

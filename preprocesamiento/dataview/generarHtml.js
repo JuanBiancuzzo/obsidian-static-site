@@ -1,7 +1,7 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
 
-import { dataArrayProxyHandler } from "./dataArray";
+import { dataArrayProxyHandler } from "./dataArray.js";
 
 const DATAVIEW_TAG_ID = "div";
 const HTMLFILE = "file:///usr/src/app/dataview/index.html";

@@ -1,7 +1,7 @@
 import sys
 import os
 
-from GeneradorArchivos import GenArchivos, filtrar
+import generador_archivos
 
 PATRON_INICIAL = "```dataviewjs"
 PATRON_FINAL = "```"
@@ -123,10 +123,10 @@ def main(argv):
 
     directorio = argv[1]
     outputdir = argv[2]
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
 
     for index, archivo in enumerate(generador):
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
         procesarArchivo(index, archivo, directorio, outputdir)
 

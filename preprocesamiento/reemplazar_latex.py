@@ -1,7 +1,7 @@
 import sys
 import os
 
-from GeneradorArchivos import GenArchivos, filtrar
+import generador_archivos
 
 EXTENSION = "tex"
 EXTENSION_FINAL = "svg"
@@ -129,10 +129,10 @@ def main(argv):
     }
 
     directorio = argv[1]
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
 
     for i, archivo in enumerate(generador):
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
         procesarArchivo(i, archivo, directorio)
 

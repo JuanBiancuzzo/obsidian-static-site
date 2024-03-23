@@ -1,3 +1,12 @@
+FROM node:20-slim as builder
+
+WORKDIR /usr/src/app/dataview
+
+COPY dataview/package.json .
+COPY dataview/package-lock.json* .
+
+RUN npm ci
+
 FROM ubuntu:22.04
 
 RUN apt-get update
@@ -9,7 +18,8 @@ RUN apt-get install -y nodejs
 
 RUN apt-get install -y pdf2svg
 
-RUN apt-get install -y --no-install-recommends texlive-latex-base texlive-latex-extra
+RUN apt-get install -y texlive-latex-base 
+RUN apt-get install -y --no-install-recommends texlive-latex-extra
 
 
 RUN apt-get install -y wget gnupg ca-certificates \
@@ -29,6 +39,8 @@ RUN apt-get -y install python3-pip
 RUN pip install pyyaml
 
 WORKDIR /usr/src/app
+
+COPY --from=builder /usr/src/app/dataview /usr/src/app/dataview
 
 COPY . .
 

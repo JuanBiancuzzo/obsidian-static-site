@@ -3,7 +3,7 @@ import sys
 import json
 import yaml
 
-from GeneradorArchivos import GenArchivos, filtrar
+import generador_archivos 
 
 ENCODING = "utf-8"
 
@@ -120,9 +120,9 @@ def main(argv):
 
     outgoingLinks = {}
 
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
     for archivo in generador:
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
 
         archivo = archivo.replace(f"{directorio}/", "")
@@ -130,9 +130,9 @@ def main(argv):
         metadataArchivo = procesarArchivo(archivo, directorio, outgoingLinks)
         metadata["files"].append(metadataArchivo)
 
-    generador = GenArchivos(directorio)
+    generador = generador_archivos.GenArchivos(directorio)
     for archivo in generador:
-        if filtrar(archivo, config):
+        if generador_archivos.filtrar(archivo, config):
             continue
 
         archivo = archivo.replace(f"{directorio}/", "")
