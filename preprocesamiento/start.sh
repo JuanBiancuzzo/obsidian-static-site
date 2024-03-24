@@ -18,12 +18,19 @@ cd "$content_path/img"
 
 cd "$app_path"
 
+# Reemplazar dataview
+cd "$app_path/dataview"
+
 # Generar metadata de archivos
 echo "Generando metadata de archivos"
-/bin/python3 "$app_path/metadata_archivos.py" "$content_path" "$app_path/dataview/allFiles.json"
+/bin/python3 "$app_path/metadata_archivos.py" "$content_path" "allFiles.json"
 
 # Reemplazar en los archivo
-/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "$app_path/dataview/query.txt"
+/bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "query.txt"
 
-/bin/node "$app_path/dataview/generarHtml.js" "$app_path/dataview/query.txt" "$app_path/dataview/allFiles.json" \
+npm i
+
+/bin/node --experimental-modules "generarHtml.js" "query.txt" "allFiles.json" \
     | xargs -I {} /bin/python3 "$app_path/reemplazar_por_html.py" {}
+
+cd "$app_path"

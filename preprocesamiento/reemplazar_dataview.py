@@ -24,16 +24,10 @@ def crearScript(index, id, script, nombreArchivo, directorio, outputdir):
     nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
     archivojs = open(f"{nombreScript}.js", "w", encoding = ENCODING)
 
+
+    archivojs.write(f'import Dataview from "./dataview.js";\n\n')
+
     archivojs.write(f"export default async function dataviewFunc{id}(root, metadata) " + "{\n")
-
-    dataviewjs = open(f"{outputdir}/dataview.js", "r", encoding = ENCODING)
-
-    for linea in dataviewjs.readlines():
-        archivojs.write(f"\t{linea}")
-    archivojs.write("\n\n")
-
-    dataviewjs.close()
-
 
     archivojs.write("\ttry{")
     nombreArchivoRelativo = nombreArchivo.replace(directorio, '')
