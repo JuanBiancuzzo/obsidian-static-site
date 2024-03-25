@@ -1,26 +1,29 @@
 import puppeteer from "puppeteer";
 import fs from "fs";
 
-import { dataArrayProxyHandler } from "./dataArray.js";
-
 const DATAVIEW_TAG_ID = "div";
 const HTMLFILE = "file:///usr/src/app/dataview/index.html";
 
-async function conseguirContenido(pagina, dataviewFunction, metadata) {
+async function conseguirContenido(pagina, javascriptFile, metadata) {
     await pagina.goto(HTMLFILE, { waitUntil: "domcontentloaded" });
 
-    // Ejecutar el código custom en el DOM
-    const dataviewTag = await pagina.$(`#${DATAVIEW_TAG_ID}`);
-    await pagina.evaluate(dataviewFunction, dataviewTag, metadata);
+    // Cargando los archivos
+    await pagina.addScriptTag({ path: './dataview.js' });
+    await pagina.addScriptTag({ path: './dataArray.js' });
+    await pagina.addScriptTag({ path: `${javascriptFile}.js` });
 
-    // Obtener el html de lo ejecutado
-    return await pagina.evaluate(dv => dv.innerHTML, dataviewTag);
-}
+    // Wait for dataview.js to be fully loaded
+    await pagina.waitForFunction(() => typeof dataArrayProxyHandler !== 'undefined');
+    await pagina.waitForFunction(() => typeof dataviewCall !== 'undefined');
+    await pagina.waitForFunction(() => typeof Dataview !== 'undefined');
 
-// Obtiene el default de un path a un archivo js pasado por parametro
-async function importarFuncion(javascriptFile) {
-    const module = await import(javascriptFile);
-    return module.default;
+    await pagina.evaluate((id, metadata) => {
+        const root = document.getElementById(id);
+        dataviewCall(root, new Proxy(metadata, dataArrayProxyHandler));
+    }, DATAVIEW_TAG_ID, metadata);
+
+    // Retrieve the content of the dataview element
+    return await pagina.$eval(`#${DATAVIEW_TAG_ID}`, dv => dv.innerHTML);
 }
 
 async function main(argv) {
@@ -33,7 +36,7 @@ async function main(argv) {
     data = data.split("\n");
 
     let metadata = fs.readFileSync(argv[3]);
-    metadata = new Proxy(JSON.parse(metadata).files, dataArrayProxyHandler);
+    metadata = JSON.parse(metadata).files;
 
     const buscador = await puppeteer.launch({
         executablePath: "/usr/bin/google-chrome-stable",
@@ -53,8 +56,7 @@ async function main(argv) {
         if (!archivo || !javascriptFile)
             continue;
 
-        let funcion = await importarFuncion(`${javascriptFile}.js`);
-        let contenido = await conseguirContenido(paginaBuscador, funcion, metadata);
+        let contenido = await conseguirContenido(paginaBuscador, javascriptFile, metadata);
 
         fs.writeFileSync(`${javascriptFile}.html`, contenido);
 

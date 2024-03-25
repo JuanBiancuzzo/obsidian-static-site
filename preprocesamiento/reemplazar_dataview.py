@@ -24,10 +24,7 @@ def crearScript(index, id, script, nombreArchivo, directorio, outputdir):
     nombreScript = f"{outputdir}/dataviewScriptFile{index}_{id}"
     archivojs = open(f"{nombreScript}.js", "w", encoding = ENCODING)
 
-
-    archivojs.write(f'import Dataview from "./dataview.js";\n\n')
-
-    archivojs.write(f"export default async function dataviewFunc{id}(root, metadata) " + "{\n")
+    archivojs.write(f"function dataviewCall(root, metadata) " + "{\n")
 
     archivojs.write("\ttry{")
     nombreArchivoRelativo = nombreArchivo.replace(directorio, '')

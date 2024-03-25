@@ -3,9 +3,9 @@
     "sort", - DONE
     "groupBy", - DONE
     "distinct", - DONE
+    "filter", - DONE
+    "map", - DONE
 
-    "filter", - NECESITO
-    "map", - NECESITO
     "flatMap", - NECESITO
     "slice", - NECESITO
     "indexOf", - NECESITO
@@ -36,12 +36,11 @@
     "toString",
     "settings",
  */
-export const dataArrayProxyHandler = {
+const dataArrayProxyHandler = {
 
     get: function(target, prop, receiver) {
         switch (prop) {
             case "sort": 
-                throw new Error(`No hay implementacion para: ${prop}`);
                 return (compareFunction) => dataArraySort(target, compareFunction);
 
             case "groupBy":
@@ -49,11 +48,9 @@ export const dataArrayProxyHandler = {
                 return (keyGetter) => dataArrayGroupBy(target, keyGetter);
 
             case "distinct":
-                throw new Error(`No hay implementacion para: ${prop}`);
                 return () => dataArrayDistinct(target);
 
             case "where":
-                throw new Error(`No hay implementacion para: ${prop}`);
                 return (predicate) => dataArrayWhere(target, predicate);
 
             case "filter": 
@@ -61,13 +58,12 @@ export const dataArrayProxyHandler = {
                 return (filterFunction) => dataArrayFilter(target, filterFunction);
 
             case "map": 
-                throw new Error(`No hay implementacion para: ${prop}`);
+                return (mapFunction) => dataArrayMap(target, mapFunction);
 
             case "flatMap": 
                 throw new Error(`No hay implementacion para: ${prop}`);
 
             case "slice": 
-                throw new Error(`No hay implementacion para: ${prop}`);
                 return (start = undefined, end = undefined) => dataArraySlice(target, start, end);
 
             case "indexOf": 
@@ -114,20 +110,22 @@ export const dataArrayProxyHandler = {
 
 // Sort function
 function dataArraySort(array, compareFunction) {
-    let newArray = [...array].sort(compareFunction);
-    return new Proxy(newArray, dataArrayProxyHandler);
+    return [...array].sort(compareFunction);
 }
 
 // Filter function
 function dataArrayFilter(array, filterFunction) {
-    let newArray = [...array].filter(filterFunction);
-    return new Proxy(newArray, dataArrayProxyHandler);
+    return [...array].filter(filterFunction);
+}
+
+// Map function
+function dataArrayMap(array, mapFunction) {
+    return [...array].map(mapFunction);
 }
 
 // Slice function
 function dataArraySlice(array, start, end) {
-    let newArray = [...array].slice(start, end);
-    return new Proxy(newArray, dataArrayProxyHandler);
+    return [...array].slice(start, end);
 }
 
 // GroupBy function
@@ -141,18 +139,16 @@ function dataArrayGroupBy(array, keyGetter) {
         grouped.set(key, collection);
     });
 
-    return new Proxy(grouped, dataArrayProxyHandler);
+    return grouped;
 }
 
 // Distinct function
 function dataArrayDistinct(array) {
-    let newArray = Array.from(new Set(array));
-    return new Proxy(newArray, dataArrayProxyHandler);
+    return Array.from(new Set(array));
 }
 
 // Where function
 function dataArrayWhere(array, predicate) {
-    let newArray = array.filter(predicate);
-    return new Proxy(newArray, dataArrayProxyHandler);
+    return array.filter(predicate);
 }
 

@@ -1,4 +1,4 @@
-export default class Dataview {
+class Dataview {
     constructor(root, metadata, current_file) {
         this.root = root;
         this.current_file = current_file;
@@ -13,7 +13,7 @@ export default class Dataview {
 
     // Query
     current() {
-        page(this.current_file);
+        this.page(this.current_file);
     }
 
     pages(source = undefined) {
@@ -32,13 +32,13 @@ export default class Dataview {
                 return archivo.file.tags.some(tag => tag == tagBuscado);
             });
 
-        } else {
+        } else if (source.includes('"')) {
             let folderBuscada = source.replaceAll('"', '').trim();
             resultado = this.metadata.filter(archivo => {
                 return archivo.file.path.includes(folderBuscada);
             });
 
-        }
+        } else {}
 
         return resultado;
     }
