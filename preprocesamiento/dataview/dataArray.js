@@ -36,119 +36,90 @@
     "toString",
     "settings",
  */
-const dataArrayProxyHandler = {
 
-    get: function(target, prop, receiver) {
-        switch (prop) {
-            case "sort": 
-                return (compareFunction) => dataArraySort(target, compareFunction);
-
-            case "groupBy":
-                throw new Error(`No hay implementacion para: ${prop}`);
-                return (keyGetter) => dataArrayGroupBy(target, keyGetter);
-
-            case "distinct":
-                return () => dataArrayDistinct(target);
-
-            case "where":
-                return (predicate) => dataArrayWhere(target, predicate);
-
-            case "filter": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-                return (filterFunction) => dataArrayFilter(target, filterFunction);
-
-            case "map": 
-                return (mapFunction) => dataArrayMap(target, mapFunction);
-
-            case "flatMap": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "slice": 
-                return (start = undefined, end = undefined) => dataArraySlice(target, start, end);
-
-            case "indexOf": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "concat": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "find": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "findIndex": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "includes": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "every": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "some": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "first": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "last": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "forEach": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            case "length": 
-                return () => target.length();
-
-            case "values": 
-                throw new Error(`No hay implementacion para: ${prop}`);
-
-            default: return Reflect.get(...arguments);
+class DataArray {
+    constructor(array) {
+        this.array = array;
+    }
+    // Sort function
+    sort(elementToValue, dir = 'asc') {
+        let compareFunction;
+        if (dir == 'desc') {
+            compareFunction = function (a, b) {
+                return elementToValue(b) - elementToValue(a);
+            }
+        } else {
+            compareFunction = function (a, b) {
+                return elementToValue(a) - elementToValue(b);
+            }
         }
+        return new DataArray(this.array.slice().sort(compareFunction));
     }
 
+    // Filter function
+    filter(filterFunction) {
+        return new DataArray(this.array.filter(filterFunction));
+    }
+
+    // Map function
+    flatMap(flatMapFunction) {
+        return new DataArray(this.array.flatMap(flatMapFunction));
+    }
+
+    // Map function
+    map(mapFunction) {
+        return new DataArray(this.array.map(mapFunction));
+    }
+
+    // Slice function
+    slice(start = undefined, end = undefined) {
+        return new DataArray(this.array.slice(start, end));
+    }
+
+    // GroupBy function
+    groupBy(keyGetter) {
+        const grouped = new Map();
+
+        this.array.slice().forEach(item => {
+            const key = keyGetter(item);
+            const collection = grouped.get(key) || [];
+            collection.push(item);
+            grouped.set(key, collection);
+        });
+
+        // values = [ { keys: "key", rows: [...] }, ... ]
+        return new DataArray(Array.from(grouped).map(([key, value]) => {
+            return {
+                key: key,
+                rows: new DataArray(value),
+            };
+        }));
+    }
+
+    // Distinct function
+    distinct() {
+        return new DataArray(Array.from(new Set(this.array)));
+    }
+
+    // Where function
+    where(predicate) {
+        return new Dataview(this.array.where(predicate));
+    }
+}
+
+DataArray.prototype.get = function(index) {
+  return this.array[index];
 };
 
-// Sort function
-function dataArraySort(array, compareFunction) {
-    return [...array].sort(compareFunction);
+DataArray.prototype[Symbol.iterator] = function() {
+    let index = -1;
+    let data = this.array;
+
+    return {
+        next: () => ({ value: data[++index], done: !(index in data) })
+    };
 }
 
-// Filter function
-function dataArrayFilter(array, filterFunction) {
-    return [...array].filter(filterFunction);
+DataArray.prototype.length = function() {
+    return this.array.length;
 }
-
-// Map function
-function dataArrayMap(array, mapFunction) {
-    return [...array].map(mapFunction);
-}
-
-// Slice function
-function dataArraySlice(array, start, end) {
-    return [...array].slice(start, end);
-}
-
-// GroupBy function
-function dataArrayGroupBy(array, keyGetter) {
-    const grouped = new Map();
-
-    array.forEach(item => {
-        const key = keyGetter(item);
-        const collection = grouped.get(key) || [];
-        collection.push(item);
-        grouped.set(key, collection);
-    });
-
-    return grouped;
-}
-
-// Distinct function
-function dataArrayDistinct(array) {
-    return Array.from(new Set(array));
-}
-
-// Where function
-function dataArrayWhere(array, predicate) {
-    return array.filter(predicate);
-}
-

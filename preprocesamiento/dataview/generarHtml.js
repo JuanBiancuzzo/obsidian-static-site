@@ -13,13 +13,13 @@ async function conseguirContenido(pagina, javascriptFile, metadata) {
     await pagina.addScriptTag({ path: `${javascriptFile}.js` });
 
     // Wait for dataview.js to be fully loaded
-    await pagina.waitForFunction(() => typeof dataArrayProxyHandler !== 'undefined');
+    await pagina.waitForFunction(() => typeof DataArray !== 'undefined');
     await pagina.waitForFunction(() => typeof dataviewCall !== 'undefined');
     await pagina.waitForFunction(() => typeof Dataview !== 'undefined');
 
     await pagina.evaluate((id, metadata) => {
         const root = document.getElementById(id);
-        dataviewCall(root, new Proxy(metadata, dataArrayProxyHandler));
+        dataviewCall(root, new DataArray(metadata));
     }, DATAVIEW_TAG_ID, metadata);
 
     // Retrieve the content of the dataview element
@@ -56,11 +56,15 @@ async function main(argv) {
         if (!archivo || !javascriptFile)
             continue;
 
-        let contenido = await conseguirContenido(paginaBuscador, javascriptFile, metadata);
+        try {
+            let contenido = await conseguirContenido(paginaBuscador, javascriptFile, metadata);
 
-        fs.writeFileSync(`${javascriptFile}.html`, contenido);
+            fs.writeFileSync(`${javascriptFile}.html`, contenido);
 
-        console.log(`${archivo}:${javascriptFile}`);
+            console.log(`${archivo}:${javascriptFile}`);
+        } catch (e) {
+            console.error(`Error: ${e}\n\tEn el archivo: ${archivo}`);
+        }
     }
 
     await buscador.close();

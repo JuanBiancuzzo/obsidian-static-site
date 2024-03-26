@@ -28,8 +28,6 @@ echo "Generando metadata de archivos"
 # Reemplazar en los archivo
 /bin/python3 "$app_path/reemplazar_dataview.py" "$content_path" "$app_path/dataview" > "query.txt"
 
-npm i
-
 /bin/node --experimental-modules "generarHtml.js" "query.txt" "allFiles.json" \
     | xargs -I {} /bin/python3 "$app_path/reemplazar_por_html.py" {}
 

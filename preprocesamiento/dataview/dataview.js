@@ -38,7 +38,9 @@ class Dataview {
                 return archivo.file.path.includes(folderBuscada);
             });
 
-        } else {}
+        } else {
+            return this.page(source);
+        }
 
         return resultado;
     }
@@ -154,7 +156,8 @@ class Dataview {
     }
 
     // Dataviews
-    list(lista) {
+    
+    createList(lista) {
         let ul = document.createElement("ul");
 
         for (let elemento of lista) {
@@ -163,7 +166,11 @@ class Dataview {
             ul.append(li);
         }
 
-        this.root.append(ul);
+        return ul;
+    }
+
+    list(lista) {
+        this.root.append(createList(lista));
     }
 
     taskList(tasks, groupByFile) {
