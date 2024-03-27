@@ -3,6 +3,8 @@
 archivo=$(echo "$1" | cut -d':' -f1)
 imagen=$(echo "$1" | cut -d':' -f2)
 
+echo "Procesando tikz: $archivo"
+
 # Crear pdf
 pdflatex "$imagen.tex" > /dev/null
 
@@ -17,5 +19,3 @@ for extension in "aux" "log" "pdf" "tex"
 do 
     rm "$imagen.$extension" > /dev/null 2>&1
 done
-
-echo "$archivo:$imagen"

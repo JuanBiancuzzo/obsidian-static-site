@@ -17,11 +17,9 @@ cd "$content_path/img"
 
 cat "$archivos_directorio" \
     | /bin/python3 "$app_path/reemplazar_latex.py" \
-    | xargs -I {} /bin/bash "$app_path/latex2svg.sh" {} \
-    | /bin/python3 "$app_path/reemplazar_por_svg.py"
+    | xargs -I {} /bin/bash "$app_path/latex2svg.sh" {}
 
 cd "$app_path"
-rm -rf "$content_path/img"
 
 # Reemplazar dataview
 cd "$app_path/dataview"

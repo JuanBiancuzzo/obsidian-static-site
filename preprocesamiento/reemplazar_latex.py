@@ -92,12 +92,12 @@ def main(index, nombreArchivo, directorio):
                 indexPatron = linea.index(PATRON_FINAL) + len(PATRON_FINAL)
 
                 imagen.append(linea[:indexPatron])
-                procesarImagen(nombreArchivo, f"{directorio}/img/imagen_{index}_{cantidad}", imagen)
+                nombreImagen = f"img/imagen_{index}_{cantidad}"
+                procesarImagen(nombreArchivo, f"{directorio}/{nombreImagen}", imagen)
                 imagen = []
 
-                id = f"{PREFIX_TIKZ}-{cantidad}"
                 temp.write('\n\n<div class="tikz_svg">\n\n')
-                temp.write(f"\n<tikz {id}>\n\n")
+                temp.write(f"\n![[{nombreImagen}.svg]]\n\n")
                 temp.write('\n\n</div>\n\n')
                 temp.write(linea[indexPatron:])
 
@@ -116,8 +116,8 @@ def main(index, nombreArchivo, directorio):
 
 if __name__ == "__main__":
     try:
-        for contador, linea in enumerate(sys.stdin):
-            archivo, directorio = linea.split(":")
+        for contador, linea in enumerate(sys.stdin.readlines()):
+            archivo, directorio = linea.replace("\n", "").split(":")
             main(contador, archivo, directorio)
     except KeyboardInterrupt:
         sys.stdout.flush()

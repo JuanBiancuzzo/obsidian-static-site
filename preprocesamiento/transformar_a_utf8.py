@@ -16,11 +16,11 @@ def procesarArchivo(nombreArchivo, encodingInicial):
     os.replace(nombreTemp, nombreArchivo)
 
 def main(argv):
-    if len(argv) <= 2:
+    if len(argv) <= 1:
         print("No se paso un directorio a buscar ")
         return -1
 
-    if len(argv) <= 3:
+    if len(argv) <= 2:
         print("No se paso un encoding de los archivos")
         return -1
 

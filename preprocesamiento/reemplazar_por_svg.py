@@ -1,4 +1,5 @@
 import sys
+import os
 import time
 
 PREFIX_TIKZ = "tikz"
@@ -39,13 +40,9 @@ def main(nombreArchivo, svgResultado):
 
 if __name__ == "__main__":
     try:
-        for linea in sys.stdin:
-            nombreArchivo, svgResultado = linea.split(":")
+        for linea in sys.stdin.readlines():
+            nombreArchivo, svgResultado = linea.replace("\n", "").split(":")
             main(nombreArchivo, svgResultado)
     except KeyboardInterrupt:
         sys.stdout.flush()
         pass
-
-
-
-
