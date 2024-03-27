@@ -14,9 +14,11 @@ mkdir "$content_path/img"
 cd "$content_path/img"
 
 /bin/python3 "$app_path/reemplazar_latex.py" "$content_path" \
-    | xargs -I {} /bin/bash "$app_path/latex2svg.sh" {}
+    | xargs -I {} /bin/bash "$app_path/latex2svg.sh" {} \
+    | /bin/python3 "$app_path/reemplazar_por_svg.py"
 
 cd "$app_path"
+rm -rf "$content_path/img"
 
 # Reemplazar dataview
 cd "$app_path/dataview"

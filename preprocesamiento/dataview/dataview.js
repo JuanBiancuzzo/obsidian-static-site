@@ -104,14 +104,19 @@ class Dataview {
 
     // Por ahora unicamente links internos
     parsearTexto(texto) {
-        return this.slitearLinks(texto).map(subtexto => {
-            if (subtexto.includes("[[") && subtexto.includes("]]"))
+        try {
+            return this.slitearLinks(texto).map(subtexto => {
+                if (subtexto.includes("[[") && subtexto.includes("]]"))
                 return this.crearLink(subtexto);
-            return subtexto;
-        });
+                return subtexto;
+            });
+        } catch (_) {
+            throw new Error(`Error con texto: \n${typeof texto}`);
+        }
     }
 
-    genElement(element, text, opt = undefined) {
+    // Render
+    el(element, text, opt = undefined) {
         let nuevoElemento = document.createElement(element);
         if (opt) {
             for (let [key, value] of opt) {
@@ -119,16 +124,16 @@ class Dataview {
             }
         }
 
-        let textoParseado = this.parsearTexto(text);
-        for (let texto of textoParseado) {
-            nuevoElemento.append(texto);
+        if (typeof text === "string") {
+            let textoParseado = this.parsearTexto(text);
+            for (let texto of textoParseado) {
+                nuevoElemento.append(texto);
+            }
+        } else {
+            nuevoElemento.append(this.crearLink(text));
         }
-        return nuevoElemento;
-    }
 
-    // Render
-    el(element, text, opt = undefined) {
-        this.root.append(this.genElement(element, text, opt));
+        this.root.append(nuevoElemento);
     }
 
     header(level, text) {
@@ -156,13 +161,18 @@ class Dataview {
     }
 
     // Dataviews
-    
     createList(lista) {
         let ul = document.createElement("ul");
 
         for (let elemento of lista) {
             let li = document.createElement("li");
-            li.append(this.genElement("span", elemento));
+            if (typeof elemento === "string") {
+                let span = document.createElement("span");
+                this.parsearTexto(elemento).forEach(texto => span.append(texto));
+                li.append(span);
+            } else {
+                li.append(this.createList(elemento));
+            }
             ul.append(li);
         }
 
@@ -170,7 +180,7 @@ class Dataview {
     }
 
     list(lista) {
-        this.root.append(createList(lista));
+        this.root.append(this.createList(lista));
     }
 
     taskList(tasks, groupByFile) {

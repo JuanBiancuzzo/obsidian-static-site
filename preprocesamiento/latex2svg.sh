@@ -3,8 +3,6 @@
 archivo=$(echo "$1" | cut -d':' -f1)
 imagen=$(echo "$1" | cut -d':' -f2)
 
-echo "Procesando imagen: $imagen"
-
 # Crear pdf
 pdflatex "$imagen.tex" > /dev/null
 
@@ -15,7 +13,9 @@ if ! pdf2svg "$imagen.pdf" "$imagen.svg"; then
 fi
 
 # Eliminar archivos exceso
-for extension in "aux" "log" "pdf" "tex" 
+for extension in "aux" "log" "pdf" "tex"
 do 
     rm "$imagen.$extension" > /dev/null 2>&1
 done
+
+echo "$archivo:$imagen.svg"

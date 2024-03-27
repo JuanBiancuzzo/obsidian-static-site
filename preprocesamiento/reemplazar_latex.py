@@ -7,6 +7,7 @@ EXTENSION = "tex"
 EXTENSION_FINAL = "svg"
 PATRON_INICIAL = "```tikz"
 PATRON_FINAL = "```"
+PREFIX_TIKZ = "tikz"
 ENCODING = "utf-8"
 
 def cambiarExtension(nombreArchivo, ext):
@@ -93,14 +94,12 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 indexPatron = linea.index(PATRON_FINAL) + len(PATRON_FINAL)
 
                 imagen.append(linea[:indexPatron])
-                nombreImagen = f"{directorio}/img/imagen ({index},{cantidad}).{EXTENSION}"
-                procesarImagen(nombreArchivo, nombreImagen, imagen)
+                procesarImagen(f"{directorio}/img/imagen_{index}_{cantidad}.{EXTENSION}", nombreImagen, imagen)
                 imagen = []
 
-                nombreImagenFinal = f"img/imagen ({index},{cantidad}).{EXTENSION_FINAL}"
-
+                id = f"{PREFIX_TIKZ}-{cantidad}"
                 temp.write('\n\n<div class="tikz_svg">\n\n')
-                temp.write(f"\n![[{nombreImagenFinal}]]\n\n")
+                temp.write(f"\n<tikz {id}>\n\n")
                 temp.write('\n\n</div>\n\n')
                 temp.write(linea[indexPatron:])
 

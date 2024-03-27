@@ -5,10 +5,10 @@
     "distinct", - DONE
     "filter", - DONE
     "map", - DONE
+    "flatMap", - DONE
+    "indexOf", - DONE
 
-    "flatMap", - NECESITO
     "slice", - NECESITO
-    "indexOf", - NECESITO
     "concat", - NECESITO
     "find", - NECESITO
     "findIndex", - NECESITO
@@ -105,6 +105,11 @@ class DataArray {
     where(predicate) {
         return new Dataview(this.array.where(predicate));
     }
+
+    // indexOf function
+    indexOf(searchPosition = undefined, position = undefined) {
+        return this.array.indexOf(searchPosition, position);
+    }
 }
 
 DataArray.prototype.get = function(index) {
@@ -123,3 +128,7 @@ DataArray.prototype[Symbol.iterator] = function() {
 DataArray.prototype.length = function() {
     return this.array.length;
 }
+
+DataArray.prototype.toString = function() {
+  return this.array.toString;
+};
