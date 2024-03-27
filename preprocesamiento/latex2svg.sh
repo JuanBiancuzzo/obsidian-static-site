@@ -18,4 +18,4 @@ do
     rm "$imagen.$extension" > /dev/null 2>&1
 done
 
-echo "$archivo:$imagen.svg"
+echo "$archivo:$imagen"

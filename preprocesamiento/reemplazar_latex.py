@@ -1,7 +1,6 @@
 import sys
+import time
 import os
-
-import generador_archivos
 
 EXTENSION = "tex"
 EXTENSION_FINAL = "svg"
@@ -48,7 +47,7 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
         preambulo.append("\\circuitikzset{color=.}")
 
 
-    with open(nombreImagen, "w", encoding = ENCODING) as imagen:
+    with open(f"{nombreImagen}.tex", "w", encoding = ENCODING) as imagen:
         for linea in preambulo:
             imagen.write(f"{linea}\n")
 
@@ -60,10 +59,9 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
                 continue
             imagen.write(linea.replace("\n", ""))
 
-    nombreImagen = ".".join(nombreImagen.split(".")[:-1])
     print(f"{nombreArchivo}:{nombreImagen}")
 
-def procesarArchivo(index, nombreArchivo, directorio):
+def main(index, nombreArchivo, directorio):
     nombreTemp = f"{directorio}/temp.txt"
 
     patronEncontrado = False
@@ -94,7 +92,7 @@ def procesarArchivo(index, nombreArchivo, directorio):
                 indexPatron = linea.index(PATRON_FINAL) + len(PATRON_FINAL)
 
                 imagen.append(linea[:indexPatron])
-                procesarImagen(f"{directorio}/img/imagen_{index}_{cantidad}.{EXTENSION}", nombreImagen, imagen)
+                procesarImagen(nombreArchivo, f"{directorio}/img/imagen_{index}_{cantidad}", imagen)
                 imagen = []
 
                 id = f"{PREFIX_TIKZ}-{cantidad}"
@@ -116,25 +114,11 @@ def procesarArchivo(index, nombreArchivo, directorio):
     else:
         os.remove(nombreTemp)
 
-
-def main(argv):
-    if len(argv) <= 1:
-        print("No se paso un directorio a buscar")
-        return -1
-
-    config = {
-        "dirAFiltrar": ["git", "github", ".configuracion"],
-        "extAFiltrar": ["png", "jpg", "svg"],
-    }
-
-    directorio = argv[1]
-    generador = generador_archivos.GenArchivos(directorio)
-
-    for i, archivo in enumerate(generador):
-        if generador_archivos.filtrar(archivo, config):
-            continue
-        procesarArchivo(i, archivo, directorio)
-
-
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        for contador, linea in enumerate(sys.stdin):
+            archivo, directorio = linea.split(":")
+            main(contador, archivo, directorio)
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        pass

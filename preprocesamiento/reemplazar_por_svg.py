@@ -4,9 +4,7 @@ import time
 PREFIX_TIKZ = "tikz"
 ENCODING = "utf-8"
 
-def main(linea):
-    nombreArchivo, svgResultado = linea.split(":")
-
+def main(nombreArchivo, svgResultado):
     print(f"Procesando tikz: {nombreArchivo}")
 
     contador = int(svgResultado.split("_")[-1])
@@ -42,7 +40,8 @@ def main(linea):
 if __name__ == "__main__":
     try:
         for linea in sys.stdin:
-            main(linea)
+            nombreArchivo, svgResultado = linea.split(":")
+            main(nombreArchivo, svgResultado)
     except KeyboardInterrupt:
         sys.stdout.flush()
         pass
