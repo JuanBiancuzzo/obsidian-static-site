@@ -30,9 +30,9 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
     contenido[-1] = contenido[-1].replace(PATRON_FINAL, "", 1)
 
     preambulo = [
-        "\\documentclass[tikz, dvipsnames]{standalone}",
+        "\\documentclass[tikz]{standalone}",
         "\\usepackage{tikz}",
-        "\\usepackage{xcolor}",
+        "\\usepackage[dvipsnames]{xcolor}",
         "\\color{white}",
     ]
 
