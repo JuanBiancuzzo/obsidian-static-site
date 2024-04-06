@@ -33,7 +33,6 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
         "\\documentclass[tikz]{standalone}",
         "\\usepackage{tikz}",
         "\\usepackage[dvipsnames]{xcolor}",
-        "\\color{white}",
     ]
 
     librerias = ["pgfplots", "circuitikz"]
@@ -57,7 +56,21 @@ def procesarImagen(nombreArchivo, nombreImagen, contenido):
 
             if linea.strip().startswith("%"):
                 continue
-            imagen.write(linea.replace("\n", ""))
+
+            # Sacando los espacios
+            lineaLimpia = linea.replace("\n", "")
+
+            # Intercambiando los colores
+            lineaLimpia = lineaLimpia.replace("#000", "white-temp")
+            lineaLimpia = lineaLimpia.replace("black", "white-temp")
+
+            lineaLimpia = lineaLimpia.replace("#fff", "black")
+            lineaLimpia = lineaLimpia.replace("#FFF", "black")
+            lineaLimpia = lineaLimpia.replace("white", "black")
+            
+            lineaLimpia = lineaLimpia.replace("white-temp", "white")
+            
+            imagen.write(lineaLimpia)
 
     print(f"{nombreArchivo}:{nombreImagen}")
 
