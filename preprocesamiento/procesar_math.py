@@ -1,13 +1,12 @@
 import sys
 import os
-
-import generador_archivos 
+import time
 
 PATRON = "$$"
 LEN_PATRON = len(PATRON)
 ENCODING = "utf-8"
 
-def procesarArchivo(nombreArchivo, directorio):
+def main(nombreArchivo, directorio):
     nombreTemp = f"{directorio}/temp.txt"
 
     patronEncontrado = False
@@ -73,24 +72,11 @@ def procesarArchivo(nombreArchivo, directorio):
     temp.close()
     os.replace(nombreTemp, nombreArchivo)
 
-def main(argv):
-    if len(argv) <= 1:
-        print("No se paso un directorio a buscar")
-        return -1
-
-    config = {
-        "dirAFiltrar": ["git", "github", ".configuracion"],
-        "extAFiltrar": ["png", "jpg", "svg"],
-    }
-
-    directorio = argv[1]
-    generador = generador_archivos.GenArchivos(directorio)
-
-    for archivo in generador:
-        if generador_archivos.filtrar(archivo, config):
-            continue
-        procesarArchivo(archivo, directorio)
-
-
 if __name__ == "__main__":
-    main(sys.argv)
+    try:
+        for linea in sys.stdin.readlines():
+            archivo, directorio = linea.replace("\n", "").split(":")
+            main(archivo, directorio)
+    except KeyboardInterrupt:
+        sys.stdout.flush()
+        pass

@@ -51,3 +51,9 @@ npx quartz build
 
 # Mover lo creado a la carpeta de content ya que estara ahi el volumen
 mv public content
+cd content
+
+# Copiamos el json de metadata
+cp allFiles.json public/static
+# Creamos archivo de ultima actualizacion
+date +'%Y-%m-%d-%H-%M' | xargs -I {} echo '{"lastUpdate": "{}"}'  >  public/static/data.json
