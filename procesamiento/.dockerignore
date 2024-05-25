@@ -1,6 +1,0 @@
-**/node_modules/ 
-**/docs/
-**/quartz/.quartz-cache/
-**/.git
-.gitignore
-publish.sh
